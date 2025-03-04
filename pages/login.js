@@ -5,6 +5,9 @@ import axiosInstance from '../utils/axiosConfig'
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/router'
 import { checkTokenValidity } from '../utils/checkToken'
+import { ExamContext } from '../context/ExamContext';
+import { useContext } from 'react';
+
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -12,15 +15,16 @@ export default function Login() {
   const dispatch = useDispatch()
   const { loading, error } = useSelector((state) => state.auth)
   const router = useRouter()
+  const { setLoading } = useContext(ExamContext);
 
   useEffect(() => {
     const sessionCode = Cookies.get('sessionCode')
     if (!sessionCode) {
       router.push('/code')
     } else {
-      checkTokenValidity()
+      checkTokenValidity(setLoading)
     }
-  }, [router])
+  }, [router,setLoading])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
