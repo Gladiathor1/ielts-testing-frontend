@@ -31,7 +31,31 @@ export default function Home() {
   
 
   
+    const fetchQuestion = async () => {
+      setFetchingQuestion(true)
+      setError(null)
+      
   
+      try {
+        const response = await axiosInstance.post('/api/users/get-question/', {
+          exam_type: examType,
+          task_number: taskNumber
+        })
+  
+        const { question, question_path } = response.data
+        console.log('Question:', question)
+        console.log('Question Path:', question_path)
+        setQuestion(question)
+        setQuestionPath(question_path)
+        setPdf(null)
+      } catch (error) {
+        console.error('Error fetching question:', error)
+        setError(error.response?.data?.detail || error.message)
+      } finally {
+        setFetchingQuestion(false)
+      }
+    }
+
     useEffect(() => {
       checkTokenValidity(setLoading)
       console.log('Choose Exam Type:', examType)
@@ -45,36 +69,13 @@ export default function Home() {
       else if(Number(questionChoice)===2){
         fetchQuestion()
       }
-    }, [examType, taskNumber, questionChoice, testType, fetchQuestion, router, setLoading])
+    }, [examType, taskNumber, questionChoice, testType, router, setLoading])
 
   if (loading) {
     return <div>Loading...</div>
   }
 
-  const fetchQuestion = async () => {
-    setFetchingQuestion(true)
-    setError(null)
-    
-
-    try {
-      const response = await axiosInstance.post('/api/users/get-question/', {
-        exam_type: examType,
-        task_number: taskNumber
-      })
-
-      const { question, question_path } = response.data
-      console.log('Question:', question)
-      console.log('Question Path:', question_path)
-      setQuestion(question)
-      setQuestionPath(question_path)
-      setPdf(null)
-    } catch (error) {
-      console.error('Error fetching question:', error)
-      setError(error.response?.data?.detail || error.message)
-    } finally {
-      setFetchingQuestion(false)
-    }
-  }
+  
 
   const submitAnswer = async () => {
     setSubmitting(true)
