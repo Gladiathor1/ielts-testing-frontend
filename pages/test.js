@@ -6,6 +6,7 @@ import { checkTokenValidity } from '../utils/checkToken'
 import { useContext } from 'react';
 import { ExamContext } from '../context/ExamContext';
 import Image from 'next/image'
+import Link from 'next/link';
 
 export default function Home() {
   const router = useRouter()
@@ -31,20 +32,20 @@ export default function Home() {
 
   
   
-  useEffect(() => {
-    checkTokenValidity(setLoading)
-    console.log('Choose Exam Type:', examType)
-    console.log('Task Number:', taskNumber)
-    console.log('Question Choice:', questionChoice)
-    console.log('Test Type:', testType)
-    if (!examType || !taskNumber || !questionChoice || !testType) {
-      router.push('/')
-      return
-    }
-    else if(Number(questionChoice)===2){
-      fetchQuestion()
-    }
-  }, [examType, taskNumber, questionChoice])
+    useEffect(() => {
+      checkTokenValidity(setLoading)
+      console.log('Choose Exam Type:', examType)
+      console.log('Task Number:', taskNumber)
+      console.log('Question Choice:', questionChoice)
+      console.log('Test Type:', testType)
+      if (!examType || !taskNumber || !questionChoice || !testType) {
+        router.push('/')
+        return
+      }
+      else if(Number(questionChoice)===2){
+        fetchQuestion()
+      }
+    }, [examType, taskNumber, questionChoice, testType, fetchQuestion, router, setLoading])
 
   if (loading) {
     return <div>Loading...</div>
@@ -54,7 +55,7 @@ export default function Home() {
     setFetchingQuestion(true)
     setError(null)
     
-    
+
     try {
       const response = await axiosInstance.post('/api/users/get-question/', {
         exam_type: examType,
@@ -183,15 +184,19 @@ export default function Home() {
   )
   const renderResultComponent = () => (
     <div className="result-div">
-            <p>Download Your Result</p>
-            <div className="result-img">
-            <Image src='/images/pdf logo.png' alt='pdf' width={104} height={120}/>
-            </div>
-            <div className="button-container">
-            <a href="/" className="button">Start Again</a>
-            {pdf && (<a href={`data:application/pdf;base64,${pdf}`} download="result.pdf" className="button button-black">Download</a>)}
-            </div>
-        </div>
+      <p>Download Your Result</p>
+      <div className="result-img">
+        <Image src='/images/pdf logo.png' alt='pdf' width={104} height={120}/>
+      </div>
+      <div className="button-container">
+        <Link href="/" passHref>
+          <a className="button">Start Again</a>
+        </Link>
+        {pdf && (
+          <a href={`data:application/pdf;base64,${pdf}`} download="result.pdf" className="button button-black">Download</a>
+        )}
+      </div>
+    </div>
   )
   
 

@@ -25,7 +25,7 @@ export default function Home() {
     console.log('task number:', taskNumber);
     console.log('question choice:', questionChoice);
     console.log('test type:', testType);
-  }, [examType,taskNumber,questionChoice,testType])
+  }, [examType,taskNumber,questionChoice,testType,setLoading])
 
   if (loading) {
     return <div>Loading...</div>
