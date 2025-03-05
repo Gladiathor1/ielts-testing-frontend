@@ -191,7 +191,7 @@ export default function Home() {
       </div>
       <div className="button-container">
         <Link href="/" passHref>
-          <a className="button">Start Again</a>
+          <span className="button">Start Again</span>
         </Link>
         {pdf && (
           <a href={`data:application/pdf;base64,${pdf}`} download="result.pdf" className="button button-black">Download</a>
