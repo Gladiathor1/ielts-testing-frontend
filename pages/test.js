@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import Cookies from 'js-cookie'
 import axiosInstance from '../utils/axiosConfig'
@@ -27,55 +27,57 @@ export default function Home() {
     uploadedFile, setUploadedFile,
     fileType, setFileType,
     fileName, setFileName,
-    responseText, setResponseText } = useContext(ExamContext);
+    responseText, setResponseText,
+    imageAndText, setImageAndText,
+    manualQues, setManualQues } = useContext(ExamContext);
   
+  const answerFileInputRef = useRef(null);
+  const [answerFileBase64, setAnswerFileBase64] = useState(null);
+  const [answerFileType, setAnswerFileType] = useState(null);
+  const [uploadingFile, setUploadingFile] = useState(false);
 
-  
-    const fetchQuestion = async () => {
-      setFetchingQuestion(true)
-      setError(null)
-      
-  
-      try {
-        const response = await axiosInstance.post('/api/users/get-question/', {
-          exam_type: examType,
-          task_number: taskNumber
-        })
-  
-        const { question, question_path } = response.data
-        console.log('Question:', question)
-        console.log('Question Path:', question_path)
-        setQuestion(question)
-        setQuestionPath(question_path)
-        setPdf(null)
-      } catch (error) {
-        console.error('Error fetching question:', error)
-        setError(error.response?.data?.detail || error.message)
-      } finally {
-        setFetchingQuestion(false)
-      }
+  const fetchQuestion = async () => {
+    setFetchingQuestion(true)
+    setError(null)
+    
+    try {
+      const response = await axiosInstance.post('/api/users/get-question/', {
+        exam_type: examType,
+        task_number: taskNumber
+      })
+
+      const { question, question_path } = response.data
+      console.log('Question:', question)
+      console.log('Question Path:', question_path)
+      setQuestion(question)
+      setQuestionPath(question_path)
+      setPdf(null)
+    } catch (error) {
+      console.error('Error fetching question:', error)
+      setError(error.response?.data?.detail || error.message)
+    } finally {
+      setFetchingQuestion(false)
     }
+  }
 
-    useEffect(() => {
-      checkTokenValidity(setLoading)
-      console.log('Choose Exam Type:', examType)
-      console.log('Task Number:', taskNumber)
-      console.log('Question Choice:', questionChoice)
-      console.log('Test Type:', testType)
-      if (!examType || !taskNumber || !questionChoice || !testType) {
-        router.push('/')
-        return
-      }
-      else if(Number(questionChoice)===2){
-        fetchQuestion()
-      }
-    }, [examType, taskNumber, questionChoice, testType, router, setLoading])
+  useEffect(() => {
+    checkTokenValidity(setLoading)
+    console.log('Choose Exam Type:', examType)
+    console.log('Task Number:', taskNumber)
+    console.log('Question Choice:', questionChoice)
+    console.log('Test Type:', testType)
+    if (!examType || !taskNumber || !questionChoice || !testType) {
+      router.push('/')
+      return
+    }
+    else if(Number(questionChoice)===2){
+      fetchQuestion()
+    }
+  }, [examType, taskNumber, questionChoice, testType, router, setLoading])
 
   if (loading) {
     return <div>Loading...</div>
   }
-
-  
 
   const submitAnswer = async () => {
     setSubmitting(true)
@@ -88,8 +90,9 @@ export default function Home() {
         exam_type: examType,
         task_number: taskNumber,
         answer_text: answer,
-        // image_base64: questionimg,
-        image_path: questionimgPath
+        image_path: questionimgPath,
+        imageAndText: imageAndText,
+        manualQues: manualQues
       };
   
       if (responseText) {
@@ -97,6 +100,14 @@ export default function Home() {
         payload.custom_question = 1;
         payload.image_path = questionimg;
         payload.file_type= fileType;
+      }
+      else if(manualQues){
+        payload.custom_question = 1;
+      }
+
+      if (answerFileBase64 && answerFileType) {
+        payload.answer_file_base64 = answerFileBase64;
+        payload.answer_file_type = answerFileType;
       }
   
       const response = await axiosInstance.post('/api/users/submit-answer/', payload);
@@ -122,6 +133,21 @@ export default function Home() {
         setUploadedFile(reader.result);
         setFileType(file.type);
         setFileName(file.name);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAnswerFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      console.log('File:', file);
+      setUploadingFile(true);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAnswerFileBase64(reader.result);
+        setAnswerFileType(file.type);
+        setUploadingFile(false);
       };
       reader.readAsDataURL(file);
     }
@@ -163,26 +189,52 @@ export default function Home() {
 
   const renderQuesComponent = () => (
     <div className="ques-ans-div">
-            <div className="ques-div">
-                <p>Your Question</p>
-                {fetchingQuestion ? 'Fetching Question...' : (
-                    questionimg && (
-                        <img src={questionimg} alt="Question" />
-                    )
-                )}
-            </div>
-            <div className="ans-div">
-                <p>Your Answer</p>
-                <textarea
-                    value={answer}
-                    onChange={(e) => setAnswer(e.target.value)}
-                    placeholder="Type your answer here..."
-                />
-                {/* <a href="#" className="submit-button" onClick={submitAnswer}>Submit Your Answer</a> */}
-                {!submitting ? <a href="#" className="submit-button" onClick={submitAnswer}>Submit Your Answer</a> :'Submitting Answer...'}
-            </div>
+      <div className="ques-div">
+        <p>Your Question</p>
+        {imageAndText ? (
+          <>
+            {manualQues && <p>{manualQues}</p>}
+            {fetchingQuestion ? 'Fetching Question...' : questionimg && <img src={questionimg} alt="Question" />}
+          </>
+        ) : (
+          <>
+            {manualQues ? <p>{manualQues}</p> : fetchingQuestion ? 'Fetching Question...' : questionimg && <img src={questionimg} alt="Question" />}
+          </>
+        )}
+      </div>
+      <div className="ans-div">
+        <div className="answer-header">
+          <p>Your Answer</p>
+          <div className="file-upload-div">
+          <button onClick={() => answerFileInputRef.current.click()} className="upload-button">Upload File</button>
+          <input
+            type="file"
+            accept="application/pdf,image/jpeg,image/png,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            onChange={handleAnswerFileUpload}
+            className="hidden"
+            ref={answerFileInputRef}
+          />
+          <span className='type-text'>jpeg, png, txt, docx, pdf</span>
+          </div>
         </div>
+        {uploadingFile ? (
+          <p>Uploading file...</p>
+        ) : (
+          <textarea
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            placeholder="Type your answer here..."
+          />
+        )}
+        {!submitting ? (
+          <a href="#" className="submit-button" onClick={submitAnswer}>Submit Your Answer</a>
+        ) : (
+          'Submitting Answer...'
+        )}
+      </div>
+    </div>
   )
+
   const renderResultComponent = () => (
     <div className="result-div">
       <p>Download Your Result</p>
@@ -199,15 +251,15 @@ export default function Home() {
       </div>
     </div>
   )
-  
 
   return (
     <div className="container">   
-    <div className='header-bar'>
-            <Image src='/images/ielts testing Logo.png' alt='logo' width={145} height={83}/>
-          </div>
-        {fetchResult ? renderResultComponent() : renderQuesComponent()}
+      <div className='header-bar'>
+        <Link href="/" passHref>
+          <Image src='/images/ielts testing Logo.png' alt='logo' width={145} height={83}/>
+        </Link>
+      </div>
+      {fetchResult ? renderResultComponent() : renderQuesComponent()}
     </div>
-
   )
 }

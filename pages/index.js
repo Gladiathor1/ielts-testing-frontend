@@ -6,6 +6,7 @@ import Cookies from 'js-cookie'
 import axiosInstance from '../utils/axiosConfig'
 import { checkTokenValidity } from '../utils/checkToken'
 import Image from 'next/image'
+import Link from 'next/link';
 
 export default function Home() {
   const router = useRouter()
@@ -91,7 +92,9 @@ export default function Home() {
   return (
     <div className="container">
       <div className='header-bar'>
+      <Link href="/" passHref>
         <Image src='/images/ielts testing Logo.png' alt='logo' width={145} height={83}/>
+        </Link>
       </div>
       <div className="test-select">
         <p>Know your Score!</p>
@@ -135,15 +138,15 @@ export default function Home() {
 
         {/* <label>Choose Your Path</label> */}
         <select value={examType} onChange={(e) => setExamType(e.target.value)}>
-          <option value="">Choose Your Path</option>
-          <option value="ac">Academic IELTS</option>
-          <option value="ge">General IELTS</option>
+          <option value="" disabled>Choose Your Path</option>
+          <option value="ac">Academic</option>
+          <option value="ge">General</option>
         </select>
 
 
         {/* <label>Choose Your Task</label> */}
         <select value={taskNumber} onChange={(e) => setTaskNumber(e.target.value)}>
-          <option value="">Choose Your Task</option>
+          <option value="" disabled>Choose Your Task</option>
           <option value="1">Task 1</option>
           <option value="2">Task 2</option>
         </select>
@@ -151,7 +154,7 @@ export default function Home() {
 
         {/* <label>Choose Your Question</label> */}
         <select value={questionChoice} onChange={(e) => setQuestionChoice(e.target.value)}>
-          <option value="">Choose Your Question</option>
+          <option value="" disabled>Choose Your Question</option>
           <option value="1">Let me choose my destiny</option>
           <option value="2">Let faith decide</option>
         </select>

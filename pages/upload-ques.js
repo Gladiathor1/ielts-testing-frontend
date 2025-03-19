@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
 import { useContext } from 'react';
 import { ExamContext } from '../context/ExamContext';
@@ -6,6 +6,7 @@ import Cookies from 'js-cookie'
 import axiosInstance from '../utils/axiosConfig'
 import { checkTokenValidity } from '../utils/checkToken'
 import Image from 'next/image'
+import Link from 'next/link';
 
 export default function Home() {
   const router = useRouter()
@@ -21,8 +22,10 @@ export default function Home() {
     questionimg, setQuestion,
     questionimgPath, setQuestionPath,
     manualQues, setManualQues,
-    responseText, setResponseText  } = useContext(ExamContext);
+    responseText, setResponseText,
+    imageAndText, setImageAndText  } = useContext(ExamContext);
     const [choiceError, setChoiceError] = useState(null);
+    const fileInputRef = useRef(null);
     // const [responseText, setResponseText] = useState('');
   
   // const [examType, setExamType] = useState('ac')
@@ -109,19 +112,36 @@ export default function Home() {
     }
   };
 
+  const handleLetFaithDecide = () => {
+    setQuestionChoice(2);
+    setManualQues('');
+    router.push('/test');
+  };
+
   const handleNextClick = async () => {
-    try {
-      const response = await axiosInstance.post('/api/users/upload-question/', {
-        exam_type: examType,
-        task_number: taskNumber,
-        file_base64: uploadedFile,
-        file_type: fileType
-      });
-      const { results } = response.data;
-      setResponseText(results);
-    } catch (error) {
-      console.error('File upload error:', error);
-      setError(error.response?.data?.detail || error.message);
+    console.log('uploaded file:', uploadedFile);
+    console.log('file type:', fileType);
+    console.log('file name:', fileName);
+    console.log('manual ques:', manualQues);
+    console.log('image and text:', imageAndText);
+    if(manualQues && !uploadedFile){
+      handleYesClick();
+      return;
+    }
+    else{
+      try {
+        const response = await axiosInstance.post('/api/users/upload-question/', {
+          exam_type: examType,
+          task_number: taskNumber,
+          file_base64: uploadedFile,
+          file_type: fileType
+        });
+        const { results } = response.data;
+        setResponseText(results);
+      } catch (error) {
+        console.error('File upload error:', error);
+        setError(error.response?.data?.detail || error.message);
+      }
     }
   };
 
@@ -131,10 +151,26 @@ export default function Home() {
     router.push('/test')
   };
 
+  const handleCheckboxChange = (event) => {
+    setImageAndText(event.target.checked);
+  };
+
+  const handleEditClick = () => {
+    setResponseText('');
+    setUploadedFile(null);
+    setFileType(null);
+    setFileName(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   return (
     <div className="container">
       <div className='header-bar'>
+      <Link href="/" passHref>
         <Image src='/images/ielts testing Logo.png' alt='logo' width={145} height={83}/>
+        </Link>
       </div>
       <div className="test-select mrg-l-100">
         <p>Know your Score!</p>
@@ -156,13 +192,20 @@ export default function Home() {
         {/* <div className='upload-ques-section'>
             <h4>Provide Your Question</h4> */}
             <div className='paste-ques-div'>
-                <p className='margin-0'>Provide Your Question</p>
-                {/* <textarea
-                    value={manualQues}
-                    onChange={(e) => setManualQues(e.target.value)}
-                    placeholder="Type your Question here..."
-                /> */}
-                {/* <p className='or-para'>OR</p> */}
+            {examType === 'ac' && taskNumber === '1' ? (
+              <p className='margin-0'>Provide Your Question</p>
+              
+            ) : (
+              <>
+                <p className='margin-0'>Add Your Question</p>
+                <textarea
+                  value={manualQues}
+                  onChange={(e) => setManualQues(e.target.value)}
+                  placeholder="Type your Question here..."
+                />
+                <p className='or-para'>OR</p>
+              </>
+            )}
                 <div className='upload-file-container'>
                 <label>
                     <input
@@ -170,6 +213,7 @@ export default function Home() {
                     accept="application/pdf,image/jpeg,image/png"
                     onChange={handleFileUpload}
                     className="hidden"
+                    ref={fileInputRef}
                     />
                     <div className="flex flex-col items-center">
                     <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -183,10 +227,20 @@ export default function Home() {
                     )}
                 </label>
                 </div>
-                {uploadedFile && (
-                    <a href="#" onClick={handleNextClick} className="submit-button-black">Next</a>
-                )}
-                <p className='special-text'>Or <a>Let Faith Decide</a></p>
+                {uploadedFile || manualQues ? (
+                    <div onClick={handleNextClick} className="submit-button-black">Next</div>
+                ):<></>}
+                <div className="checkbox-container">
+                  <label>
+                    <input
+                      type="checkbox"
+                      onChange={handleCheckboxChange}
+                    />
+                    Include Image and Text
+                  </label>
+                </div>
+                <p className='special-text'>Or <span className='inner' onClick={handleLetFaithDecide}>Let Faith Decide</span></p>
+
                 
             </div>
             
@@ -199,9 +253,9 @@ export default function Home() {
                       <h3>Is This Transcript Correct?</h3>
                       <div className="button-container">
                       <a onClick={handleYesClick} className="button">Yes</a>
-                      <a onClick={() => setResponseText('')} className="button button-black">Edit</a>
+                      <a onClick={handleEditClick} className="button button-black">Edit</a>
                       </div>
-                      <p className='special-text'>Or <a>Let Faith Decide</a></p>
+                      <p className='special-text'>Or <span className='inner' onClick={handleLetFaithDecide}>Let Faith Decide</span></p>
                     </div>
                 </div>
             )}
