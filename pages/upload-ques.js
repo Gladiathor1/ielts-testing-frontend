@@ -26,10 +26,8 @@ export default function Home() {
     imageAndText, setImageAndText  } = useContext(ExamContext);
     const [choiceError, setChoiceError] = useState(null);
     const fileInputRef = useRef(null);
-    // const [responseText, setResponseText] = useState('');
+    const [dragging, setDragging] = useState(false);
   
-  // const [examType, setExamType] = useState('ac')
-
   useEffect(() => {
     checkTokenValidity(setLoading)
     console.log('exam type:', examType);
@@ -99,8 +97,7 @@ export default function Home() {
     }
   };
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
+  const handleFileUpload = (file) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -110,6 +107,27 @@ export default function Home() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleFileInputChange = (event) => {
+    const file = event.target.files[0];
+    handleFileUpload(file);
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    setDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setDragging(false);
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    setDragging(false);
+    const file = event.dataTransfer.files[0];
+    handleFileUpload(file);
   };
 
   const handleLetFaithDecide = () => {
@@ -206,12 +224,18 @@ export default function Home() {
                 <p className='or-para'>OR</p>
               </>
             )}
-                <div className='upload-file-container'>
+            <div className='upload-file-img-container'>
+                <div 
+                  className={`upload-file-container ${dragging ? 'dragging' : ''}`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
                 <label>
                     <input
                     type="file"
                     accept="application/pdf,image/jpeg,image/png"
-                    onChange={handleFileUpload}
+                    onChange={handleFileInputChange}
                     className="hidden"
                     ref={fileInputRef}
                     />
@@ -227,9 +251,14 @@ export default function Home() {
                     )}
                 </label>
                 </div>
+                <Image className='arrow-image' src='/images/drag image pointer.png' alt='logo' width={283} height={111}/>
+                <Image src='/images/your ques blur.png' alt='logo' width={579} height={461}/>
+                </div>
                 {uploadedFile || manualQues ? (
                     <div onClick={handleNextClick} className="submit-button-black">Next</div>
                 ):<></>}
+
+                {examType === 'ac' && taskNumber === '1' ? <></>:
                 <div className="checkbox-container">
                   <label>
                     <input
@@ -238,7 +267,8 @@ export default function Home() {
                     />
                     Include Image and Text
                   </label>
-                </div>
+                </div>}
+                
                 <p className='special-text'>Or <span className='inner' onClick={handleLetFaithDecide}>Let Faith Decide</span></p>
 
                 

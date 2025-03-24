@@ -35,6 +35,7 @@ export default function Home() {
   const [answerFileBase64, setAnswerFileBase64] = useState(null);
   const [answerFileType, setAnswerFileType] = useState(null);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [submittingText, setSubmittingText] = useState("Submitting Answer...");
 
   const fetchQuestion = async () => {
     setFetchingQuestion(true)
@@ -74,6 +75,23 @@ export default function Home() {
       fetchQuestion()
     }
   }, [examType, taskNumber, questionChoice, testType, router, setLoading])
+
+  useEffect(() => {
+    if (submitting) {
+      const texts = [
+        "Submitting Answer...",
+        "Prepping up the PDF...",
+        "Adding some sugar, spice, and everything nice...",
+        "Almost there, hang tight..."
+      ];
+      let index = 0;
+      const interval = setInterval(() => {
+        setSubmittingText(texts[index]);
+        index = (index + 1) % texts.length;
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [submitting]);
 
   if (loading) {
     return <div>Loading...</div>
@@ -227,9 +245,9 @@ export default function Home() {
           />
         )}
         {!submitting ? (
-          <a href="#" className="submit-button" onClick={submitAnswer}>Submit Your Answer</a>
+          <a className="submit-button" onClick={submitAnswer}>Submit Your Answer</a>
         ) : (
-          'Submitting Answer...'
+          <p>{submittingText}</p>
         )}
       </div>
     </div>
