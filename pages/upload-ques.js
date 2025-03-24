@@ -252,7 +252,7 @@ export default function Home() {
                 </label>
                 </div>
                 <Image className='arrow-image' src='/images/drag image pointer.png' alt='logo' width={283} height={111}/>
-                <Image src='/images/your ques blur.png' alt='logo' width={579} height={461}/>
+                <Image className='blur-img' src='/images/your ques blur.png' alt='logo' width={579} height={461}/>
                 </div>
                 {uploadedFile || manualQues ? (
                     <div onClick={handleNextClick} className="submit-button-black">Next</div>

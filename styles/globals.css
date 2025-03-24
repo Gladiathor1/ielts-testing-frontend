@@ -541,12 +541,17 @@ p.special-text .inner{
 }
 
 .upload-file-img-container {
-  display: flex;
-  width: 1500px;
-  /* overflow: scroll; */
+  position: relative;
 }
 
 img.arrow-image {
-  height: 111px;
-  margin: auto;
+  position: absolute;
+  right: -55%;
+  top: 0;
+}
+
+img.blur-img {
+  position: absolute;
+  right: -160%;
+  top: -90%;
 }
