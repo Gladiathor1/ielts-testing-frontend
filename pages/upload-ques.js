@@ -268,8 +268,7 @@ export default function Home() {
                       I want to use both image and text for my question 
                     <br/>
                     <span className='note-text'>
-                    ** note if this is uncheked only the text or image will be used basef on what you select, if both fields are filled and this option is not selected then the image will be used
-                    </span>
+                    <b>Note:</b> If unchecked, only the selected text or image will be used. If both fields are filled and this option is not selected, the image will be used.</span>
                   </label>
                 </div>}
                 
