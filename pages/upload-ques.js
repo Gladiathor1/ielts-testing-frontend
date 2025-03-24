@@ -211,10 +211,7 @@ export default function Home() {
             <h4>Provide Your Question</h4> */}
             <div className='paste-ques-div'>
             {/* {examType === 'ac' && taskNumber === '1' ? ( */}
-            {true ? (
-              <p className='margin-0'>Provide Your Question</p>
-              
-            ) : (
+
               <>
                 <p className='margin-0'>Add Your Question</p>
                 <textarea
@@ -224,7 +221,6 @@ export default function Home() {
                 />
                 <p className='or-para'>OR</p>
               </>
-            )}
             <div className='upload-file-img-container'>
                 <div 
                   className={`upload-file-container ${dragging ? 'dragging' : ''}`}
@@ -260,7 +256,6 @@ export default function Home() {
                 ):<></>}
 
                 {/* {examType === 'ac' && taskNumber === '1' ? <></>: */}
-                {true ? <></>:
                 <div className="checkbox-container">
                   <label>
                     <input
@@ -272,7 +267,7 @@ export default function Home() {
                     <span className='note-text'>
                     <b>Note:</b> If unchecked, only the selected text or image will be used. If both fields are filled and this option is not selected, the image will be used.</span>
                   </label>
-                </div>}
+                </div>
                 
                 <p className='special-text'>Or <span className='inner' onClick={handleLetFaithDecide}>Let Faith Decide</span></p>
 
