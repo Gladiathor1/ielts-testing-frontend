@@ -191,7 +191,7 @@ export default function Home() {
         </Link>
       </div>
       <div className="test-select mrg-l-100">
-        <p>Know your Score!</p>
+        <p>Know Your Score!</p>
         <div className="test-select-buttons">
           <div className="test-select-button hover-change active no-cursor">
             {testType === "writing" ? <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -265,7 +265,11 @@ export default function Home() {
                       type="checkbox"
                       onChange={handleCheckboxChange}
                     />
-                    Include Image and Text
+                      I want to use both image and text for my question 
+                    <br/>
+                    <span className='note-text'>
+                    ** note if this is uncheked only the text or image will be used basef on what you select, if both fields are filled and this option is not selected then the image will be used
+                    </span>
                   </label>
                 </div>}
                 

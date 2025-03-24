@@ -555,3 +555,15 @@ img.blur-img {
   right: -160%;
   top: -90%;
 }
+
+.checkbox-container input[type="checkbox"] {
+  margin-right: 10px;
+  transform: scale(1.5);
+}
+span.note-text {
+  color: red;
+  font-size: 14px;
+  width: 390px;
+  display: block;
+  margin-top: 10px;
+}
