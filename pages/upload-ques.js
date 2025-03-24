@@ -210,7 +210,8 @@ export default function Home() {
         {/* <div className='upload-ques-section'>
             <h4>Provide Your Question</h4> */}
             <div className='paste-ques-div'>
-            {examType === 'ac' && taskNumber === '1' ? (
+            {/* {examType === 'ac' && taskNumber === '1' ? ( */}
+            {true ? (
               <p className='margin-0'>Provide Your Question</p>
               
             ) : (
@@ -258,7 +259,8 @@ export default function Home() {
                     <div onClick={handleNextClick} className="submit-button-black">Next</div>
                 ):<></>}
 
-                {examType === 'ac' && taskNumber === '1' ? <></>:
+                {/* {examType === 'ac' && taskNumber === '1' ? <></>: */}
+                {true ? <></>:
                 <div className="checkbox-container">
                   <label>
                     <input
