@@ -539,3 +539,14 @@ p.special-text .inner{
   font-size: 14px;
   font-family: 'DMSans', serif;
 }
+
+.upload-file-img-container {
+  display: flex;
+  width: 1500px;
+  /* overflow: scroll; */
+}
+
+img.arrow-image {
+  height: 111px;
+  margin: auto;
+}
