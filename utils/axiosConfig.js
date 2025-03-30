@@ -2,7 +2,8 @@ import axios from 'axios'
 import Cookies from 'js-cookie'
 
 const axiosInstance = axios.create({
-  baseURL: 'https://54.84.214.114',
+  // baseURL: 'https://54.84.214.114',
+  baseURL: 'https://backend.ielts-testing.com',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
