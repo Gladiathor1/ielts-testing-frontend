@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Cookies from 'js-cookie'
 
-const VALID_CODE = 'Ielts Testing Special Invitation' // Replace with your actual valid code
+const VALID_CODE = 'Let the magic begin!' // Replace with your actual valid code
 
 export default function CodeValidation() {
   const [code, setCode] = useState('')
