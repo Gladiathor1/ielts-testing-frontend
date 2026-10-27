@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# IELTS Testing — Front End
 
-## Getting Started
+A Next.js web app for practising the **IELTS Writing** test. Candidates pick the exam type and task, get a writing prompt (or upload their own), write or upload their answer, and receive an automated evaluation with a downloadable PDF report.
 
-First, run the development server:
+It is the front end for the IELTS Testing API (`backend.ielts-testing.com`).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## How it works
+
+1. **Access code** — users enter a session access code (`/code`) before they can log in.
+2. **Register / log in** — accounts are handled by the back end; JWT access and refresh tokens are stored in cookies and refreshed automatically when they expire.
+3. **Choose a test** (`/`) — select the exam type (Academic or General Training), task number (Task 1 or Task 2) and whether to use a generated question or your own.
+4. **Write** (`/writing`, `/test`) — fetch the task prompt (including Task 1 charts/images), then type the answer or upload it as a file.
+5. **Results** — the answer is submitted for evaluation and the results are shown on screen along with a PDF report.
+6. **Upload a question** (`/upload-ques`) — practise with a question you supply yourself.
+
+## Tech stack
+
+- Next.js 15 (Pages Router), React 19
+- Redux Toolkit (auth state) + React Context (exam state)
+- Axios with request/response interceptors for auth and token refresh
+- Tailwind CSS
+- js-cookie
+
+## Project structure
+
+```
+pages/           Routes: index, login, register, code, test, writing, upload-ques
+context/         ExamContext — exam type, task number, question choice, results
+store/           Redux store and auth slice
+utils/           Axios instance (base URL + token handling), token check helper
+styles/, app/    Global styles
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Getting started
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Learn More
+The API base URL is configured in [`utils/axiosConfig.js`](utils/axiosConfig.js); change it to point at your own back end. The token-refresh call in the same file currently targets a local back end (`127.0.0.1:8000`).
 
-To learn more about Next.js, take a look at the following resources:
+### Other scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build   # production build
+npm start       # serve the production build
+npm run lint
+```
